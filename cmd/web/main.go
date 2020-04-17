@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -9,7 +10,9 @@ import (
 	"tommynurwantoro/dotcom/internal/domain"
 	"tommynurwantoro/dotcom/internal/http/handler"
 	"tommynurwantoro/dotcom/internal/http/router"
+	"tommynurwantoro/dotcom/pkg"
 
+	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/echoview-v4"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -38,7 +41,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	//Set Renderer
-	e.Renderer = echoview.Default()
+	e.Renderer = getRendererConfig()
 
 	// Init handler
 	h := handler.NewHandler(e)
@@ -49,6 +52,10 @@ func main() {
 	e.Static("/assets", "assets")
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
+
+	// Init database
+	db := pkg.ResolveMysql()
+	defer db.Close()
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("APP_PORT"))))
 }
@@ -78,4 +85,15 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 	if err := c.File(errorPage); err != nil {
 		fmt.Println("Error to load file")
 	}
+}
+
+func getRendererConfig() *echoview.ViewEngine {
+	return echoview.New(goview.Config{
+		Root:         "internal/views",
+		Extension:    ".html",
+		Master:       "layouts/master",
+		Partials:     []string{},
+		Funcs:        make(template.FuncMap),
+		DisableCache: false,
+	})
 }
