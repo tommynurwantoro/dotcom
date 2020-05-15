@@ -76,7 +76,7 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 		code = he.Code
 	}
 
-	errorPage := fmt.Sprintf("views/errors/%d.html", code)
+	errorPage := fmt.Sprintf("internal/views/errors/%d.html", code)
 	if err := c.File(errorPage); err != nil {
 		fmt.Println("Error to load file")
 	}
