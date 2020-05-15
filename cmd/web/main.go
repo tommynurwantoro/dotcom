@@ -10,7 +10,6 @@ import (
 	"tommynurwantoro/dotcom/internal/domain"
 	"tommynurwantoro/dotcom/internal/http/handler"
 	"tommynurwantoro/dotcom/internal/http/router"
-	"tommynurwantoro/dotcom/pkg"
 
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/echoview-v4"
@@ -52,10 +51,6 @@ func main() {
 	e.Static("/assets", "assets")
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
-
-	// Init database
-	db := pkg.ResolveMysql()
-	defer db.Close()
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("APP_PORT"))))
 }
